@@ -15,12 +15,15 @@ export default class App extends Component<Props> {
     super()
     this.state = {
       randomNumber: 0,
-      guesses: 0,
-      lastResult: 0,
+      guesses: '',
+      lastResult: '',
       lowOrHi: '',
       guessCount: 1,
+      previousGuess: '',
+      isOver: false,
     }
     this.checkGuess = this.checkGuess.bind(this)
+    this.resetGame = this.resetGame.bind(this)
   }
 
   componentDidMount() {
@@ -30,18 +33,22 @@ export default class App extends Component<Props> {
   initialGame() {
     this.setState({
       randomNumber: Math.floor(Math.random() * 100) + 1,
-      guesses: 0,
-      lastResult: 0,
+      guesses: '',
+      lastResult: '',
       lowOrHi: '',
       guessCount: 1,
+      previousGuess: '',
+      isOver: false,
     })
   }
 
   checkGuess() {
     let userGuess = Number(this.state.guesses)
-    let guessCount = this.state.guessCount
-    if (this.state.guessCount === 1) {
 
+    if (this.state.guessCount == 1) {
+      this.setState({ previousGuess: 'Previous guesses: ' + userGuess })
+    } else {
+      this.setState({ previousGuess: this.state.previousGuess + ' ' + userGuess })
     }
 
     if (userGuess == this.state.randomNumber) {
@@ -50,7 +57,7 @@ export default class App extends Component<Props> {
         lowOrHi: ''
       })
       this.setGameOver()
-    } else if (guessCount == 10) {
+    } else if (this.state.guessCount == 10) {
       this.setState({ lastResult: '!!!GAME OVER!!!' })
       this.setGameOver()
     } else {
@@ -63,44 +70,23 @@ export default class App extends Component<Props> {
     }
 
     this.setState({
-      guessCount: guessCount++,
+      guessCount: this.state.guessCount + 1,
       guesses: ''
     })
   }
 
   setGameOver() {
-    // guessField.disabled = true;
-    // guessSubmit.disabled = true;
-    // resetButton = document.createElement('button');
-    // resetButton.textContent = 'Start new game';
-    // document.body.appendChild(resetButton);
-    // resetButton.addEventListener('click', resetGame);
+    this.setState({ isOver: true })
   }
 
   resetGame() {
-    this.setState({ guessCount: 1 })
-
-    // const resetParas = document.querySelectorAll('.resultParas p');
-    // for (let i = 0 ; i < resetParas.length ; i++) {
-    //   resetParas[i].textContent = '';
-    // }
-
-    // resetButton.parentNode.removeChild(resetButton);
-
-    // guessField.disabled = false;
-    // guessSubmit.disabled = false;
-    // guessField.value = '';
-    // guessField.focus();
-
-    // lastResult.style.backgroundColor = 'white';
-
-    // randomNumber = Math.floor(Math.random() * 100) + 1;
+    this.initialGame()
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={{fontSize: 10}}>Number guessing game</Text>
+        <Text>Number guessing game</Text>
         <Text>
           We have selected a random number between 1 and 100. See if you can guess it in 10 turns or fewer. We'll tell you if your guess was too high or too low.
         </Text>
@@ -109,15 +95,25 @@ export default class App extends Component<Props> {
           style={{height: 40, borderColor: 'gray', borderWidth: 1}}
           placeholder="guess number"
           onChangeText={(guessField) => this.setState({guesses: guessField})}
-          value={this.state.guesses}
+          value={this.state.guesses.toString()}
         />
         <Button
           onPress={this.checkGuess}
           title="Submit guess"
         />
-        <Text>{this.state.guesses}</Text>
-        <Text>{this.state.lastResult}</Text>
-        <Text>{this.state.lowOrHi}</Text>
+        <View>
+          <Text>{this.state.lastResult}</Text>
+          <Text>{this.state.lowOrHi}</Text>
+          <Text>{this.state.previousGuess}</Text>
+          {this.state.isOver &&
+              <View>
+                <Button
+                  onPress={this.resetGame}
+                  title="Start new game"
+                />
+              </View>
+          }
+        </View>
       </View>
     );
   }
@@ -126,8 +122,5 @@ export default class App extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
   },
 });
