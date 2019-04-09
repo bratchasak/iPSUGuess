@@ -3,8 +3,8 @@
 ## Getting Started
 
 ```
-$ git clone https://github.com/bratchasak/iPSUGuess.git
+$ git clone -b expo https://github.com/bratchasak/iPSUGuess.git
 $ cd iPSUGuess
 $ npm install
-$ react-native run-android OR react-native run-ios
+$ npm start
 ```
